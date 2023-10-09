@@ -13,11 +13,9 @@ def sample_vector_layer():
     vect_path = os.path.join(
         "onstove",
         "tests",
-        "data",
-        "RWA",
-        "Administrative",
-        "Country_boundaries",
-        "Country_boundaries.geojson")
+        "tests_data",
+        "vector.geojson"
+    )
     # Create a VectorLayer object with sample data
     vect = VectorLayer(path=vect_path)
     return vect
@@ -29,11 +27,8 @@ def sample_raster_layer():
     rast_path = os.path.join(
         "onstove",
         "tests",
-        "data",
-        "RWA",
-        "Demographics",
-        "Urban",
-        "Urban.tif"
+        "tests_data",
+        "raster.tif"
     )
     # Create RasterLayer object
     raster_file = RasterLayer(path=rast_path)
@@ -59,6 +54,28 @@ def mca_object():
 
 
 @pytest.fixture
+def raster_path():
+    path = os.path.join(
+        "onstove",
+        "tests",
+        "tests_data",
+        "raster3.tif"
+    )
+    return path
+
+
+@pytest.fixture
+def vector_path():
+    path = os.path.join(
+        "onstove",
+        "tests",
+        "tests_data",
+        "vector.geojson"
+    )
+    return path
+
+
+@pytest.fixture
 def output_path():
     path = os.path.join(
         "onstove",
@@ -75,57 +92,33 @@ def test_model(model_object):
     assert isinstance(model_object, OnStove)
 
 
-def test_get_layers():
-    pass
-
-
-def test_add_layer(model_object):
+def test_add_layer(model_object, raster_path):
     path = os.path.join(
-        "onstove",
-        "tests",
-        "data",
-        "RWA",
-        "Demographics",
-        "Population",
-        "Population.tif"
+        raster_path
     )
     model_object.add_layer(
-        category='Demographics',
-        name='Population',
         path=path,
         layer_type='raster',
-        base_layer=True
+        base_layer=False
     )
     assert len(model_object.layers.items()) > 0
 
 
-def test_add_mask_layer(data_object):
+def test_add_mask_layer(data_object, vector_path):
     path = os.path.join(
-        "onstove",
-        "tests",
-        "data",
-        "RWA",
-        "Administrative",
-        "Country_boundaries",
-        "Country_boundaries.geojson")
+        vector_path
+    )
     data_object.add_mask_layer(
         path=path
     )
     assert isinstance(data_object, DataProcessor)
 
 
-def test_mask_layers(data_object, sample_raster_layer):
+def test_mask_layers(data_object, sample_raster_layer, vector_path):
     path = os.path.join(
-        "onstove",
-        "tests",
-        "data",
-        "RWA",
-        "Administrative",
-        "Country_boundaries",
-        "Country_boundaries.geojson")
+        vector_path
+    )
     data_object.add_mask_layer(
-        category='Administrative',
-        name='County_boundaries',
         path=path,
     )
     data_object.mask_layers(
@@ -158,26 +151,8 @@ def test_to_pickle(model_object, output_path):
     )
 
 
-# MCA
-
-def test_set_demand_index():
-    pass
-
-
-def test_set_supply_index():
-    pass
-
-
-def test_set_clean_cooking_index():
-    pass
-
-
-def test_assistance_need_index():
-    pass
-
-
 # OnStove
-def test_read_scenario_data(model_object):# TODO
+def test_read_scenario_data(model_object):
     path = os.path.join(
         "onstove",
         "tests",
@@ -190,7 +165,7 @@ def test_read_scenario_data(model_object):# TODO
     assert isinstance(model_object.specs, dict)
 
 
-def test_population_to_dataframe(model_object):
+def test_population_to_dataframe(model_object, raster_path):
     path = os.path.join(
         "onstove",
         "tests",
@@ -205,7 +180,7 @@ def test_population_to_dataframe(model_object):
         name="Population",
         path=path,
         layer_type="raster",
-        base_layer="True"
+        base_layer=True
     )
     model_object.population_to_dataframe()
     assert model_object.gdf is not None
