@@ -1,7 +1,7 @@
 name: OnStove Functional tests
 on:
   push:
-    branches: ['*']
+    branches: ['actions', 'tests', 'tests_technology']
     paths: ['onstove/*', 'onstove/tests/*']
 
 jobs:
