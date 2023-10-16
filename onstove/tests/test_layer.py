@@ -3,9 +3,8 @@ import os
 import pytest
 from onstove.layer import VectorLayer, RasterLayer
 
-# Vector Layer test functions
 
-
+# vector layer test functions
 @pytest.fixture
 def sample_vector_layer():
     # set path
